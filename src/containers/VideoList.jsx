@@ -5,10 +5,16 @@ const VideoList = ({ movieList }) => {
   return (
     <ul>
       {
-        movieList.map(movie => <VideoListItem key={movie.id} movie={movie} />)
+        movieList.map(
+          movie => <VideoListItem key={movie.id} movie={movie} callback={reciveCbFromVideoListItem} />
+        )
       }
     </ul>
   )
+  function reciveCbFromVideoListItem(movie) {
+    // recup valeur du cb de VideoListItem
+    console.log(movie);
+  }
 
 }
 export default VideoList

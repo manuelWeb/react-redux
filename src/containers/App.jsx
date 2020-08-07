@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import '../style/style.scss'
 
 import SearchBar from '../components/SearchBar'
 import VideoList from './VideoList'
@@ -61,10 +62,18 @@ class App extends Component {
     }
     return (
       <React.Fragment>
-        <SearchBar />
-        <Video videoId={this.state.currentMovie.idVideo} />
-        {renderVideoList()}
-        <VideoDetail title={this.state.currentMovie.title} description={this.state.currentMovie.overview} />
+        <div className="search_bar">
+          <SearchBar />
+        </div>
+        <div className="row">
+          <div className="col-md-8">
+            <Video videoId={this.state.currentMovie.idVideo} />
+            <VideoDetail title={this.state.currentMovie.title} description={this.state.currentMovie.overview} />
+          </div>
+          <div className="col-md-4">
+            {renderVideoList()}
+          </div>
+        </div>
       </React.Fragment>
     )
   }

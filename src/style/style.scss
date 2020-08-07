@@ -1,0 +1,14 @@
+body {
+  padding: 1em;
+}
+.search_bar {
+  margin-top: 50px;
+  margin-bottom: 30px;
+}
+
+li {
+  list-style: none;
+  &:hover {
+    background-color: #E0E0E0;
+  }
+}
