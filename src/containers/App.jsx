@@ -14,6 +14,7 @@ const API_KEY = 'api_key=f526d226365b08ce1f6e296bff5c37db'
 class App extends Component {
   constructor(props) {
     super(props)
+    this.reciveCbPropsFromVideoList = this.reciveCbPropsFromVideoList.bind(this)
     this.state = {
       movieList: {},
       currentMovie: {}
@@ -30,7 +31,7 @@ class App extends Component {
       .then(
         function (response) {
           this.setState({
-            movieList: response.data.results.slice(1, 6),
+            movieList: response.data.results.slice(1, 11),
             currentMovie: response.data.results[0]
           }, function () {
             // function CB de setState
@@ -52,12 +53,21 @@ class App extends Component {
       })
   }
 
+  reciveCbPropsFromVideoList(movie) {
+    // movie est reçu de façon caché dans VideoList callbc={this.re..List}
+    // console.log(movie);
 
+    // pour bien bien maj le state on utilse la fn cb de setState
+    this.setState({ currentMovie: movie }, function () {
+      this.applyVideoToCurrentMovie()
+    })
+  }
 
   render() {
     const renderVideoList = () => {
-      if (this.state.movieList.length >= 5) {
-        return <VideoList movieList={this.state.movieList} />
+      if (this.state.movieList.length >= 10) {
+        // + hype bind reciveCbPopsFromVideoList in constructor
+        return <VideoList movieList={this.state.movieList} callback={this.reciveCbPropsFromVideoList} />
       }
     }
     return (

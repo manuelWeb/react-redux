@@ -1,7 +1,8 @@
 import React from 'react'
 import VideoListItem from '../components/VideoListItem'
 
-const VideoList = ({ movieList }) => {
+const VideoList = (props) => {
+  const { movieList } = props
   return (
     <ul>
       {
@@ -13,7 +14,10 @@ const VideoList = ({ movieList }) => {
   )
   function reciveCbFromVideoListItem(movie) {
     // recup valeur du cb de VideoListItem
-    console.log(movie);
+    // console.log(movie);
+
+    // passer la props du cb à app
+    props.callback(movie)
   }
 
 }
