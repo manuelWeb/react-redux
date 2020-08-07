@@ -4,6 +4,7 @@ import axios from 'axios'
 import SearchBar from '../components/SearchBar'
 import VideoList from './VideoList'
 import VideoDetail from '../components/VideoDetail'
+import Video from '../components/Video'
 
 const API_END_POINT = 'https://api.themoviedb.org/3/'
 const POPULAR_MOVIE_URL = 'discover/movie?language=fr&sort_by=popularity.desc&include_adult=false&append_to_response=images'
@@ -16,22 +17,41 @@ class App extends Component {
       movieList: {},
       currentMovie: {}
     }
-  }
-
-  componentWillMount() {
     this.initMovies()
   }
 
+  // componentWillMount() {
+  //   this.initMovies()
+  // }
+
   initMovies() {
-    axios.get(`${API_END_POINT}${POPULAR_MOVIE_URL}&${API_KEY}`).then(
-      function (response) {
-        this.setState({
-          movieList: response.data.results.slice(1, 6),
-          currentMovie: response.data.results[0]
-        })
-      }.bind(this)
-    )
+    axios.get(`${API_END_POINT}${POPULAR_MOVIE_URL}&${API_KEY}`)
+      .then(
+        function (response) {
+          this.setState({
+            movieList: response.data.results.slice(1, 6),
+            currentMovie: response.data.results[0]
+          }, function () {
+            // function CB de setState
+            this.applyVideoToCurrentMovie();
+          }
+          )
+        }.bind(this)
+      )
   }
+
+  applyVideoToCurrentMovie() {
+    axios
+      .get(`${API_END_POINT}movie/${this.state.currentMovie.id}?${API_KEY}&append_to_response=videos&include_adult=false`)
+      .then((resp) => {
+        const youtubeKey = resp.data.videos.results[0].key
+        let newCurrentMovieState = this.state.currentMovie
+        newCurrentMovieState.idVideo = youtubeKey
+        this.setState({ currentMovie: newCurrentMovieState })
+      })
+  }
+
+
 
   render() {
     const renderVideoList = () => {
@@ -42,6 +62,7 @@ class App extends Component {
     return (
       <React.Fragment>
         <SearchBar />
+        <Video videoId={this.state.currentMovie.idVideo} />
         {renderVideoList()}
         <VideoDetail title={this.state.currentMovie.title} description={this.state.currentMovie.overview} />
       </React.Fragment>
