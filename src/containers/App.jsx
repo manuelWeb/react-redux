@@ -45,22 +45,43 @@ class App extends Component {
   applyVideoToCurrentMovie() {
     axios
       .get(`${API_END_POINT}movie/${this.state.currentMovie.id}?${API_KEY}&append_to_response=videos&include_adult=false`)
-      .then((resp) => {
-        const youtubeKey = resp.data.videos.results[0].key
-        let newCurrentMovieState = this.state.currentMovie
-        newCurrentMovieState.idVideo = youtubeKey
-        this.setState({ currentMovie: newCurrentMovieState })
-      })
+      .then(
+        // pas de bin(this) grace à arrow fn
+        (resp) => {
+          const youtubeKey = resp.data.videos.results[0].key
+          let newCurrentMovieState = this.state.currentMovie
+          newCurrentMovieState.idVideo = youtubeKey
+          this.setState({ currentMovie: newCurrentMovieState })
+        }
+      )
   }
 
   reciveCbPropsFromVideoList(movie) {
     // movie est reçu de façon caché dans VideoList callbc={this.re..List}
     // console.log(movie);
-
     // pour bien bien maj le state on utilse la fn cb de setState
     this.setState({ currentMovie: movie }, function () {
       this.applyVideoToCurrentMovie()
     })
+  }
+  onClickSearchMovie(searchValue) {
+    // console.log(searchValue);
+    const SEARCH_URL = 'search/movie?language=fr&include_adult=false'
+    searchValue &&
+      axios
+        .get(`${API_END_POINT}${SEARCH_URL}&${API_KEY}&query=${searchValue}`)
+        .then((resp) => {
+          if (resp.data && resp.data.results[0]) {
+            // console.log(resp.data.results.map(i => i.original_title));
+            // verifier que search film n'est pas le currentmovie grace à son id
+            if (resp.data.results[0].id !== this.state.currentMovie.id) {
+              this.setState({ currentMovie: resp.data.results[0] }, () => {
+                this.applyVideoToCurrentMovie()
+              })
+            }
+          }
+        })
+
   }
 
   render() {
@@ -73,7 +94,7 @@ class App extends Component {
     return (
       <React.Fragment>
         <div className="search_bar">
-          <SearchBar />
+          <SearchBar callback={this.onClickSearchMovie.bind(this)} />
         </div>
         <div className="row">
           <div className="col-md-8">
