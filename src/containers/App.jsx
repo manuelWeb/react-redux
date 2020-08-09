@@ -8,6 +8,7 @@ import VideoDetail from '../components/VideoDetail'
 import Video from '../components/Video'
 
 const API_END_POINT = 'https://api.themoviedb.org/3/'
+const DEFAULT_PARAM = "language=fr&include_adult=false";
 const POPULAR_MOVIE_URL = 'discover/movie?language=fr&sort_by=popularity.desc&include_adult=false&append_to_response=images'
 const API_KEY = 'api_key=f526d226365b08ce1f6e296bff5c37db'
 
@@ -16,7 +17,7 @@ class App extends Component {
     super(props)
     this.reciveCbPropsFromVideoList = this.reciveCbPropsFromVideoList.bind(this)
     this.state = {
-      movieList: {},
+      movieList: [],
       currentMovie: {}
     }
     this.initMovies()
@@ -44,15 +45,18 @@ class App extends Component {
 
   applyVideoToCurrentMovie() {
     axios
-      .get(`${API_END_POINT}movie/${this.state.currentMovie.id}?${API_KEY}&append_to_response=videos&include_adult=false`)
+      .get(`${API_END_POINT}movie/${this.state.currentMovie.id}?${API_KEY}&append_to_response=videos&${DEFAULT_PARAM}`)
       .then(
         // pas de bin(this) grace à arrow fn
         (resp) => {
-          const youtubeKey = resp.data.videos.results[0].key
-          let newCurrentMovieState = this.state.currentMovie
-          newCurrentMovieState.idVideo = youtubeKey
-          this.setState({ currentMovie: newCurrentMovieState })
-        }
+          if (resp.data.videos.results[0] && resp.data.videos.results[0].key) {
+            console.log(resp.data.videos);
+            const youtubeKey = resp.data.videos.results[0].key
+            let newCurrentMovieState = this.state.currentMovie
+            newCurrentMovieState.idVideo = youtubeKey
+            this.setState({ currentMovie: newCurrentMovieState })
+          }
+        }//.bind(this)
       )
   }
 
@@ -67,7 +71,7 @@ class App extends Component {
   onClickSearchMovie(searchValue) {
     // console.log(searchValue);
     const SEARCH_URL = 'search/movie?language=fr&include_adult=false'
-    searchValue &&
+    if (searchValue) {
       axios
         .get(`${API_END_POINT}${SEARCH_URL}&${API_KEY}&query=${searchValue}`)
         .then((resp) => {
@@ -81,6 +85,7 @@ class App extends Component {
             }
           }
         })
+    }
 
   }
 
@@ -97,7 +102,7 @@ class App extends Component {
           <SearchBar callback={this.onClickSearchMovie.bind(this)} />
         </div>
         <div className="row">
-          <div className="col-md-8">
+          <div className="col-md-8 video">
             <Video videoId={this.state.currentMovie.idVideo} />
             <VideoDetail title={this.state.currentMovie.title} description={this.state.currentMovie.overview} />
           </div>
