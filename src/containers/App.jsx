@@ -8,7 +8,6 @@ import VideoDetail from '../components/VideoDetail'
 import Video from '../components/Video'
 
 const API_END_POINT = 'https://api.themoviedb.org/3/'
-const DEFAULT_PARAM = "language=fr&include_adult=false";
 const POPULAR_MOVIE_URL = 'discover/movie?language=fr&sort_by=popularity.desc&include_adult=false&append_to_response=images'
 const API_KEY = 'f526d226365b08ce1f6e296bff5c37db'
 

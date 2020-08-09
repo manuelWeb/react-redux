@@ -7,7 +7,9 @@ class SearchBar extends Component {
 
     this.state = {
       searchText: "",
-      placeHolder: "Titre du film…"
+      placeHolder: "Titre du film…",
+      intervalBeforeRequest: 1000,
+      lockRequest: false,
     }
 
   }
@@ -25,11 +27,22 @@ class SearchBar extends Component {
   }
 
   handleChange(event) {
+    if (!this.state.lockRequest) {
+      this.setState({ lockRequest: true })
+      setTimeout(() => {
+        this.search()
+      }, this.state.intervalBeforeRequest);
+    }
     this.setState({ searchText: event.target.value })
   }
-  handleClick(e) {
+  handleClick() {
+    this.search()
+  }
+  search() {
     // recup input value state
     this.props.callback(this.state.searchText)
+    // réouverture du verrou search request
+    this.setState({ lockRequest: false })
   }
 }
 
