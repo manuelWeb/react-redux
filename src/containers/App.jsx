@@ -15,7 +15,7 @@ const API_KEY = 'f526d226365b08ce1f6e296bff5c37db'
 class App extends Component {
   constructor(props) {
     super(props)
-    this.reciveCbPropsFromVideoList = this.reciveCbPropsFromVideoList.bind(this)
+    this.onClickListItem = this.onClickListItem.bind(this)
     this.state = {
       movieList: [],
       currentMovie: {}
@@ -26,7 +26,6 @@ class App extends Component {
   // componentWillMount() {
   //   this.initMovies()
   // }
-
   initMovies() {
     axios.get(`${API_END_POINT}${POPULAR_MOVIE_URL}&api_key=${API_KEY}`)
       .then(
@@ -42,7 +41,37 @@ class App extends Component {
         }.bind(this)
       )
   }
+  onClickListItem(movie) {
+    // reciveCbPropsFromVideoList
+    // movie est reçu de façon caché dans VideoList callbc={this.re..List}
+    // console.log(movie);
+    // pour bien bien maj le state on utilse la fn cb de setState
+    this.setState({ currentMovie: movie }, function () {
+      this.applyVideoToCurrentMovie()
+      this.setRecommendation()
+    })
+  }
+  onClickSearchMovie(searchValue) {
+    // console.log(searchValue);
+    const SEARCH_URL = 'search/movie?language=fr&include_adult=false'
+    if (searchValue) {
+      axios
+        .get(`${API_END_POINT}${SEARCH_URL}&api_key=${API_KEY}&query=${searchValue}`)
+        .then((resp) => {
+          if (resp.data && resp.data.results[0]) {
+            // console.log(resp.data.results.map(i => i.original_title));
+            // verifier que search film n'est pas le currentmovie grace à son id
+            if (resp.data.results[0].id !== this.state.currentMovie.id) {
+              this.setState({ currentMovie: resp.data.results[0] }, () => {
+                this.applyVideoToCurrentMovie()
+                this.setRecommendation()
+              })
+            }
+          }
+        })
+    }
 
+  }
   applyVideoToCurrentMovie() {
     axios
       // .get(`${API_END_POINT}movie/${this.state.currentMovie.id}?api_key=${API_KEY}&append_to_response=videos&${DEFAULT_PARAM}`)
@@ -66,41 +95,23 @@ class App extends Component {
         }//.bind(this)
       )
   }
-
-  reciveCbPropsFromVideoList(movie) {
-    // movie est reçu de façon caché dans VideoList callbc={this.re..List}
-    // console.log(movie);
-    // pour bien bien maj le state on utilse la fn cb de setState
-    this.setState({ currentMovie: movie }, function () {
-      this.applyVideoToCurrentMovie()
-    })
-  }
-  onClickSearchMovie(searchValue) {
-    // console.log(searchValue);
-    const SEARCH_URL = 'search/movie?language=fr&include_adult=false'
-    if (searchValue) {
-      axios
-        .get(`${API_END_POINT}${SEARCH_URL}&api_key=${API_KEY}&query=${searchValue}`)
-        .then((resp) => {
-          if (resp.data && resp.data.results[0]) {
-            // console.log(resp.data.results.map(i => i.original_title));
-            // verifier que search film n'est pas le currentmovie grace à son id
-            if (resp.data.results[0].id !== this.state.currentMovie.id) {
-              this.setState({ currentMovie: resp.data.results[0] }, () => {
-                this.applyVideoToCurrentMovie()
-              })
-            }
+  setRecommendation() {
+    // use in search fn => update movies list
+    axios.get(`${API_END_POINT}movie/${this.state.currentMovie.id}/recommendations?api_key=${API_KEY}&language=fr`)
+      .then(
+        function (response) {
+          if (response.data && response.data.results.length > 10) {
+            this.setState({ movieList: response.data.results.slice(0, 10) })
           }
-        })
-    }
-
+        }.bind(this)
+      )
   }
 
   render() {
     const renderVideoList = () => {
       if (this.state.movieList.length >= 10) {
         // + hype bind reciveCbPopsFromVideoList in constructor
-        return <VideoList movieList={this.state.movieList} callback={this.reciveCbPropsFromVideoList} />
+        return <VideoList movieList={this.state.movieList} callback={this.onClickListItem} />
       }
     }
     return (

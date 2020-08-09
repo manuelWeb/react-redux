@@ -1,9 +1,21 @@
 body {
-  padding: 1em;
+  padding: 0 1em;
 }
 .search_bar {
-  margin-top: 50px;
-  margin-bottom: 30px;
+  margin: 24px 0;
+}
+.media{
+  margin-bottom: 8px;
+  &.media-heading{
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 0 4px rgba(#000, 0.08),0 0 8px rgba(#000, 0.15);
+    transition: all .6s ease-in-out;
+  }
+  &:hover {
+    background-color: #333;
+    color: #fff;
+  }
 }
 .video {
   position: sticky;
@@ -12,7 +24,4 @@ body {
 
 li {
   list-style: none;
-  &:hover {
-    background-color: #E0E0E0;
-  }
 }
