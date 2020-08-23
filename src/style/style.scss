@@ -25,3 +25,13 @@ body {
 li {
   list-style: none;
 }
+
+@media (max-width:776px){
+  .video {
+    position: relative;
+  }
+  .list {
+    margin-top: 64px;
+  }
+
+}

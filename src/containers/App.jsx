@@ -123,7 +123,7 @@ class App extends Component {
             <Video videoId={this.state.currentMovie.idVideo} />
             <VideoDetail title={this.state.currentMovie.title} description={this.state.currentMovie.overview} />
           </div>
-          <div className="col-md-4">
+          <div className="col-md-4 list">
             {renderVideoList()}
           </div>
         </div>
